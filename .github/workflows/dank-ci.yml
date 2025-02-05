@@ -1,0 +1,20 @@
+name: DANK-Net CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Audit Smart Contracts
+        run: |
+          cargo audit --path solana-programs/dank_token
+          cargo audit --path solana-programs/governance
+          
+      - name: Run AI Safety Checks
+        run: |
+          python scripts/model_verifier.py \
+            --model ai-engine/text_generation/gpt4_meme.py \
+            --expected-hash ${{ secrets.MODEL_HASH }}
